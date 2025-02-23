@@ -1,0 +1,65 @@
+﻿@using HotelVR.Common.Infrastructure.Models.Queries
+@using HotelVR.WebApp.Infrastructure.Services.Interfaceses
+
+<div class="container">
+    <h2 class="text-center mb-4">Odalarımız</h2>
+
+    @if (rooms == null)
+    {
+        <div class="text-center">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Yükleniyor...</span>
+            </div>
+        </div>
+    }
+    else if (rooms.Count == 0)
+    {
+        <div class="alert alert-info text-center">
+            Henüz oda bulunmamaktadır.
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var room in rooms)
+            {
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <img src="" class="card-img-top" alt="@room.Id">
+                        <div class="card-body">
+                            <h5 class="card-title">@room.Name</h5>
+                            <p class="card-text">@room.Description</p>
+                            
+                            <h4 class="text-primary">₺@room.Price/gece</h4>
+                            <a href="/reservation/@room.Id" class="btn btn-primary">Rezervasyon Yap</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+	[Inject]
+	IHotelRoomService hotelRoomService { get; set; }
+
+	List<RoomViewModel> rooms = new List<RoomViewModel>();
+
+	protected override async Task OnInitializedAsync()
+	{
+
+		await RefreshList();
+
+	}
+
+
+	public async Task RefreshList()
+	{
+		rooms = await hotelRoomService.GetAllRooms();
+		StateHasChanged();
+
+
+	}
+    
+}

@@ -1,0 +1,77 @@
+﻿@using Application.Queries.Hotel.HotelViewModel
+<div class="featured-hotels">
+    <h3>Öne Çıkan Oteller</h3>
+    <div class="row">
+        @if (FeaturedHotels != null)
+        {
+            @foreach (var hotel in FeaturedHotels)
+            {
+                <div class="col-md-4 mb-4">
+                    <div class="card hotel-card">
+                        <img src="@hotel" class="card-img-top" alt="@hotel.Name">
+                        <div class="card-body">
+                            <h5 class="card-title">@hotel.Name</h5>
+                            <p class="card-text">@hotel.Description</p>
+                            <div class="hotel-meta">
+                                <span><i class="fa fa-map-marker"></i> @hotel.Location</span>
+                                <span><i class="fa fa-star"></i> @hotel</span>
+                            </div>
+                            <div class="hotel-actions mt-3">
+                                <button class="btn btn-primary btn-sm" @onclick="() => NavigateToHotelDetail(hotel.Id)">
+                                    Detayları Görüntüle
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-12">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Oteller yükleniyor...</span>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    [Inject] private IHotelService HotelService { get; set; }
+    [Inject] private NavigationManager NavigationManager { get; set; }
+
+    private List<HotelViewModel> FeaturedHotels { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var allHotels = await HotelService.GetAllHotelsAsync();
+
+            // İlk 3 oteli öne çıkan olarak seç
+            FeaturedHotels = allHotels
+                .Take(3)
+                .Select(h => new HotelViewModel
+                    {
+                        Id = h.Id,
+                        Name = h.Name,
+                       Location= h.Location,
+                        Description = h.Description ?? "Lüks ve konforlu konaklama",
+                       
+                    })
+                .ToList();
+        }
+        catch (Exception ex)
+        {
+            // Hata yönetimi
+          var errorMessage = ex.Message;
+        }
+    }
+
+    private void NavigateToHotelDetail(Guid Id)
+    {
+        NavigationManager.NavigateTo($"/hotel/detail/{Id}");
+    }
+}
+

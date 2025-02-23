@@ -1,0 +1,147 @@
+﻿@page "/hotel/detail/{Id:guid}"
+@using Application.Queries.Hotel.HotelViewModel
+@using Domain.Models
+
+
+
+<div class="hotel-detail-container">
+    @if (Hotel == null)
+    {
+        <div class="spinner-container text-center">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Otel yükleniyor...</span>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-md-8">
+                <div class="hotel-gallery">
+                    <div id="hotelCarousel" class="carousel slide" data-bs-ride="carousel">
+                        <div class="carousel-inner">
+                           
+                        </div>
+                       
+                    </div>
+                </div>
+
+                <div class="hotel-info mt-4">
+                    <h1>@Hotel.Name</h1>
+                    <div class="hotel-rating">
+                        @for (int i = 0; i < (review.Rating); i++)
+                        {
+                            <i class="fa fa-star text-warning"></i>
+                        }
+                        <span class="ms-2">(@review.Rating/5) -  Değerlendirme</span>
+                    </div>
+
+                    <div class="hotel-location mt-2">
+                        <i class="fa fa-map-marker"></i> @Hotel.Address
+                    </div>
+
+                    <div class="hotel-description mt-3">
+                        <h4>Otel Açıklaması</h4>
+                        <p>@Hotel.Description</p>
+                    </div>
+
+                    
+                </div>
+
+               
+
+              
+                        <p>Bu otele henüz yorum yapılmamış.</p>
+                    
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="booking-card card">
+                    <div class="card-body">
+                        <h4 class="card-title">Rezervasyon Yap</h4>
+                        <div class="mb-3">
+                            <label>Oda Seçimi</label>
+                            <select class="form-control">
+                              
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label>Giriş Tarihi</label>
+                            <input type="date" class="form-control" />
+                        </div>
+                        <div class="mb-3">
+                            <label>Çıkış Tarihi</label>
+                            <input type="date" class="form-control" />
+                        </div>
+                        <div class="mb-3">
+                            <label>Misafir Sayısı</label>
+                            <input type="number" class="form-control" min="1" max="4" />
+                        </div>
+                        <button class="btn btn-primary w-100">
+                            Rezervasyon Yap
+                        </button>
+                    </div>
+                </div>
+            </div>
+       
+    }
+</div>
+@code {
+    [Parameter] public Guid Id { get; set; }
+    [Inject] 
+    IHotelRoomService hotelRoomService  { get; set; }
+    [Inject]
+    IReviewService ReviewService { get; set; }
+    [Inject]
+    IHotelService HotelService { get; set; }
+    public RoomViewModel Room { get; set; }
+    private HotelDetailViewModel Hotel { get; set; }
+    ReviewViewModel review = new();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadHotelDetails();
+        await LoadReviews();
+    }
+
+    private async Task LoadHotelDetails()
+    {
+        try
+        {
+            Hotel = await HotelService.GetHotelDetailAsync(Id);
+        }
+        catch (Exception ex)
+        {
+            // Hata yönetimi
+            Console.WriteLine($"Otel detayları yüklenirken hata: {ex.Message}");
+        }
+    }
+
+    private async Task LoadReviews()
+    {
+        try
+        {
+            //review = await ReviewService.GetHotelReviewsAsync(Id);
+        }
+        catch (Exception ex)
+        {
+            // Hata yönetimi
+            Console.WriteLine($"Yorumlar yüklenirken hata: {ex.Message}");
+        }
+    }
+
+    private string GetAmenityIcon(string amenity)
+    {
+        return amenity.ToLower() switch
+        {
+            "wifi" => "fa fa-wifi",
+            "havuz" => "fa fa-swimming-pool",
+            "spa" => "fa fa-spa",
+            "restoran" => "fa fa-utensils",
+            "fitness" => "fa fa-dumbbell",
+            _ => "fa fa-check"
+        };
+    }
+}

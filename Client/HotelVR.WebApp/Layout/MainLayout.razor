@@ -1,0 +1,277 @@
+﻿@using Application.Queries.Search
+@inherits LayoutComponentBase
+@inject NavigationManager NavigationManager
+@inject IHotelService HotelService
+@inject AuthenticationStateProvider AuthStateProvider
+
+<div class="hotel-layout">
+    <nav class="hotel-navbar">
+        <div class="hotel-logo">
+            <a href="/">
+                <img src="/images/hotel-logo.png" alt="Hotel Logo" />
+            </a>
+        </div>
+
+        <div class="hotel-search">
+            <div class="input-group">
+                <input type="search"
+                       class="form-control"
+                       placeholder="Search Hotels, Rooms, Amenities"
+                       @bind-value="@SearchText"
+                       @bind-value:event="oninput"
+                       @onkeypress="SearchKeyDown" />
+
+                <button class="btn btn-primary" @onclick="Search">
+                    <i class="fa fa-search"></i>
+                </button>
+            </div>
+
+            @if (showSearchResult)
+            {
+                <ul class="list-group">
+
+                    @foreach (var searchItem in searchResults)
+                    {
+                        <li class="list-group-item">
+                            <a @onclick="(async()=> await GoEntry(searchItem.Id))">
+                                @searchItem.Subject
+                            </a>
+                        </li>
+                    }
+                </ul>
+            }
+        </div>
+         
+    
+        <AuthorizeView>
+            <Authorized>
+                <div class="hotel-user-actions">
+                    <div class="dropdown">
+                        <button class="btn btn-outline-light dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown">
+                            @context.User.Identity?.Name
+                        </button>
+                        <ul class="dropdown-content">
+                            <li><a class="dropdown-item" href="/bookings">My Bookings</a></li>
+                            <li><a class="dropdown-item" href="/profile">Profile</a></li>
+                            <li><hr class="dropdown-divider" /></li>
+                            <li><a class="dropdown-item" href="/logout">Logout</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </Authorized>
+            <NotAuthorized>
+                <div class="hotel-auth-actions">
+                    <button class="btn btn-outline-light" @onclick="NavigateLoginPage">Login</button>
+                    <button class="btn btn-light" @onclick="NavigateLogoutPage">Register</button>
+                </div>
+            </NotAuthorized>
+        </AuthorizeView>
+    </nav>
+
+    <div class="hotel-main-container">
+        <aside class="hotel-sidebar">
+            <div class="sidebar-section">
+                <h5>Quick Links</h5>
+                <nav>
+                    <a href="/rooms">Rooms</a>
+                    <a href="/amenities">Amenities</a>
+                    <a href="/offers">Special Offers</a>
+                    <a href="/contact">Contact Us</a>
+                </nav>
+            </div>
+            <div class="sidebar-section">
+                <h5>Current Filters</h5>
+                <div class="filter-group">
+                    <h6>Lokasyon</h6>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="istanbul" checked>
+                        <label class="form-check-label" for="istanbul">
+                            İstanbul
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="ankara">
+                        <label class="form-check-label" for="ankara">
+                            Ankara
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="izmir">
+                        <label class="form-check-label" for="izmir">
+                            İzmir
+                        </label>
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <h6>Fiyat Aralığı</h6>
+                    <div class="input-group">
+                        <input type="number" class="form-control" placeholder="Min" aria-label="Minimum Fiyat">
+                        <input type="number" class="form-control" placeholder="Max" aria-label="Maksimum Fiyat">
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <h6>Otel Özellikleri</h6>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="spa">
+                        <label class="form-check-label" for="spa">
+                            Spa
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="havuz">
+                        <label class="form-check-label" for="havuz">
+                            Yüzme Havuzu
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="restoran">
+                        <label class="form-check-label" for="restoran">
+                            Restoran
+                        </label>
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <h6>Değerlendirme</h6>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="rating" id="rating4" checked>
+                        <label class="form-check-label" for="rating4">
+                            4 Yıldız ve Üzeri
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="rating" id="rating5">
+                        <label class="form-check-label" for="rating5">
+                            5 Yıldız
+                        </label>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary w-100 mt-3">Filtreleri Uygula</button>
+            </div>
+        </aside>
+
+        <main class="hotel-content">
+            @Body
+        </main>
+    </div>
+
+    <footer class="hotel-footer">
+        <div class="footer-container">
+            <div class="footer-section">
+                <h5>Quick Links</h5>
+                <ul>
+                    <li><a href="/rooms">Rooms</a></li>
+                    <li><a href="/amenities">Amenities</a></li>
+                    <li><a href="/offers">Special Offers</a></li>
+                    <li><a href="/about">About Us</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h5>Contact Info</h5>
+                <p>🏨 Luxury Hotel Street, No:42</p>
+                <p>📞 +90 (555) 123 45 67</p>
+                <p>✉️ info@hotelrv.com</p>
+            </div>
+
+            <div class="footer-section">
+                <h5>Follow Us</h5>
+                <div class="social-icons">
+                    <a href="#" class="social-icon"><i class="fab fa-facebook"></i></a>
+                    <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="social-icon"><i class="fab fa-linkedin"></i></a>
+                </div>
+            </div>
+
+            <div class="footer-section newsletter">
+                <h5>Stay Updated</h5>
+                <p>Subscribe to our newsletter</p>
+                <div class="input-group">
+                    <input type="email" class="form-control" placeholder="Enter your email" />
+                    <button class="btn btn-primary">Subscribe</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <div class="copyright">
+                © @DateTime.Now.Year HotelRV. All Rights Reserved.
+            </div>
+            <div class="footer-links">
+                <a href="/privacy">Privacy Policy</a>
+                <a href="/terms">Terms of Service</a>
+            </div>
+        </div>
+    </footer>
+</div>
+
+@code {
+    [Inject]
+    NavigationManager navigationManager { get; set; }
+    [Inject]
+    IHotelService hotelService { get; set; }
+
+    private string SearchText;
+    private bool showSearchResult;
+    private List<SearchHotelViewModel> searchResults =
+        new List<SearchHotelViewModel>();
+
+    private void NavigateMEPage()
+    {
+        navigationManager.NavigateTo("/me");
+    }
+
+    private async Task SearchKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Code == "Enter" || e.Code == "NumpadEnter")
+        {
+            await Search();
+        }
+    }
+
+    private async Task OnSearchFocusOut()
+    {
+        await Task.Delay(100);
+        if (showSearchResult)
+            showSearchResult = false;
+    }
+
+    private async Task Search()
+    {
+        if (string.IsNullOrEmpty(SearchText))
+            return;
+
+        searchResults = await hotelService.SearchBySubject(SearchText);
+
+        showSearchResult = true;
+
+        SearchText = string.Empty;
+    }
+    private async Task GoEntry(Guid hotelId)
+    {
+        await OnSearchFocusOut();
+        navigationManager.NavigateTo($"/hotel/{hotelId}");
+    }
+
+    private async Task NavigateToHotel(Guid HotelId)
+    {
+        await OnSearchFocusOut();
+        navigationManager.NavigateTo($"/hotel/{HotelId}");
+    }
+
+    private void NavigateLoginPage()
+    {
+        navigationManager.NavigateTo("/login");
+    }
+
+    private void NavigateLogoutPage()
+    {
+        navigationManager.NavigateTo("/logout");
+    }
+}
+
+

@@ -1,0 +1,33 @@
+﻿@using Application.RequestModels.Review.CreateRevıew
+@using HotelVR.Common.Events
+ 
+
+
+
+
+
+
+@code{
+    [Parameter]
+    public ReviewViewModel review { get; set; } = new();
+    [Inject]
+    IReviewService ReviewService { get; set; }
+    //TODO BURAYA sadece rezervasyon yapanlarin yorum yapabilmesi icn GEREKLI ISLEMLER BURADA OLACAK DAHA SONRA BAKACAGIM 
+    private async Task OnfavClicked(IsHaveHotelReservationEventArgs args)
+    {
+        if(args.IsReserved)
+        {
+           // await ReviewService.CreateReviewAsync(review);
+        }
+
+        StateHasChanged();
+    }
+    private async Task OnClickedCreate(CreateReviewCommand command )
+    {
+        await ReviewService.CreateReviewAsync(command);
+		StateHasChanged();
+    }
+
+   
+
+}

@@ -1,0 +1,79 @@
+﻿@page "/"
+<div class="container my-5">
+    <h1 class="mb-4">Sonraki otel konaklamanızdan %50 oranına varan kazanç elde edin</h1>
+    <p>100'den fazla siteden otel fiyatlarını karşılaştırıyoruz</p>
+    <div class="card p-4">
+        <form>
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label for="otel" class="form-label">Otel</label>
+                    <input type="text" class="form-control" id="otel" placeholder="Adana">
+                </div>
+                <div class="col-md-2">
+                    <label for="giris" class="form-label">Giriş</label>
+                    <input type="date" class="form-control" id="giris">
+                </div>
+                <div class="col-md-2">
+                    <label for="cikis" class="form-label">Çıkış</label>
+                    <input type="date" class="form-control" id="cikis">
+                </div>
+                <div class="col-md-3">
+                    <label for="misafir" class="form-label">Misafirler ve Odalar</label>
+                    <select class="form-select" id="misafir">
+                        <option selected>2 Misafir, 1 Oda</option>
+                        <option>1 Misafir, 1 Oda</option>
+                        <option>3 Misafir, 2 Oda</option>
+                    </select>
+                </div>
+                <div class="col-md-1 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">Ara</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="text-center mt-4">
+        <img src="https://via.placeholder.com/100x30" alt="agoda">
+        <img src="https://via.placeholder.com/100x30" alt="Hotels.com">
+        <img src="https://via.placeholder.com/100x30" alt="etstur">
+        <img src="https://via.placeholder.com/100x30" alt="tatilsepeti">
+        <img src="https://via.placeholder.com/100x30" alt="Jolly">
+        <img src="https://via.placeholder.com/100x30" alt="tatilbudur">
+    </div>
+</div>
+
+
+
+    <main>
+      <HotelVR.WebApp.Pages.Hotel.FeaturedHotelsComponents/>
+
+        <article class="content px-4">
+           
+
+            <div class="hotel-services">
+                <h3>Hizmetlerimiz</h3>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="service-item">
+                            <i class="fa fa-bed"></i>
+                            <h4>Konforlu Odalar</h4>
+                            <p>Lüks ve modern odalar</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="service-item">
+                            <i class="fa fa-utensils"></i>
+                            <h4>Restoran</h4>
+                            <p>Seçkin mutfak deneyimi</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="service-item">
+                            <i class="fa fa-spa"></i>
+                            <h4>Spa Merkezi</h4>
+                            <p>Rahatlama ve yenilenme</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </article>
+    </main>

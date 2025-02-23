@@ -1,0 +1,81 @@
+﻿@page "/login"
+@using Application.RequestModels.User.LoginCommand
+
+<div class="login-container">
+    <div class="login-card">
+        <div class="login-logo">
+           
+        </div>
+        <h2>Giriş Yap</h2>
+        @if (!identityService.IsLoggedIn)
+        {
+            
+        }
+        <EditForm Model="@loginUserCommand" OnValidSubmit="LoginProcess">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="form-group">
+                <label for="username">Kullanıcı Adı</label>
+                <InputText id="username" class="form-control" @bind-Value="loginUserCommand.Email" />
+                <ValidationMessage For="@(() => loginUserCommand.Email)" />
+            </div>
+
+            <div class="form-group">
+                <label for="password">Şifre</label>
+                <InputText id="password" type="password" class="form-control" @bind-Value="loginUserCommand.Password" />
+                <ValidationMessage For="@(() => loginUserCommand.Password)" />
+            </div>
+
+            @if (!string.IsNullOrEmpty(ErrorText))
+            {
+                <div class="alert alert-danger">
+                    @ErrorText
+                </div>
+            }
+
+            <button type="submit" class="btn btn-primary btn-block">
+                Giriş Yap
+            </button>
+
+            <div class="login-footer">
+                <a href="/register">Hesap Oluştur</a>
+                <a href="/forgot-password">Şifremi Unuttum</a>
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    [Inject]
+    IidentityService identityService { get; set; }
+
+    [Inject]
+    NavigationManager navigationManager { get; set; }
+
+    private string ErrorText="";
+
+    private LoginUserCommand loginUserCommand = new();
+
+    public async Task LoginProcess()
+    {
+        try
+        {
+            var res=await identityService.Login(loginUserCommand);
+            if (res)
+            {
+                ErrorText="";
+                navigationManager.NavigateTo("/");
+            }
+            else
+            {
+                ErrorText = "Login failed witth unknow reasons";
+            }
+        }
+		catch (Exception ex)
+		{
+			ErrorText=ex.Message;
+		}
+    }
+
+}
